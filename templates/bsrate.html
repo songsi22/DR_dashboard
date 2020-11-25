@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">{{ title }}</h5>
+                {% if user.id == 'bcrs' %}
+                    <a href="#" onclick="resetbtn();" style="float: right"><span
+                            style="color:red">업무 완료 Reset</span></a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" style="width:100%">
+                        <thead>
+                        <tr>
+                            <th>업무구분</th>
+                            <th>업무 서비스</th>
+                            <th>점검 중</th>
+                            <th>점검 완료</th>
+                            <th>완료 시간</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for i in data %}
+                            <tr>
+                                {% if i.BS|length == 0 %}
+                                    <td>{{ i.BD }}</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td rowspan="{{ i.BS|length }}">{{ i.BD }}</td>
+                                        {% for x in i.BS %}
+                                            <td>{{ x.BSname }}</td>
+                                            <td>
+                                                {% if x.BSing == 1 %}
+                                                    <input class="btn btn-success active bsingbtnreset btn-xs" type="button"
+                                                           name="{{ x.BSname }}" value="점검 중"
+                                                           >
+                                                {% else %}
+                                                    <input class="btn btn-outline-danger bsingbtn btn-xs" type="button"
+                                                           name="{{ x.BSname }}" value="미점검">
+                                                {% endif %}
+
+                                            </td>
+                                            <td>
+                                                {% if x.BSdone == 1 %}
+                                                    <div class="input-group mb-1 col-6">
+                                                        {#<input type="text" class="form-control" value="{{ x.ckname }}"
+                                                               readonly>#}
+                                                        <div class="input-group-append">
+                                                            <input type="button" name="{{ x.BSname }}"
+                                                                   class="btn btn-success active bsdonebtnreset btn-xs"
+                                                                   value="점검 완료">
+                                                            </input>
+                                                        </div>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="input-group mb-1 col-6">
+                                                        {#<input type="text" class="form-control" name="{{ x.BSname }}"
+                                                               placeholder="이름">#}
+                                                        <div class="input-group-append">
+                                                            <input type="button" name="{{ x.BSname }}"
+                                                                   class="btn btn-outline-danger bsdonebtn btn-xs"
+                                                                   value="점검 중">
+                                                            </input>
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ x.ckdate }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                {% endif %}
+                        {% endfor %}
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <td>업무구분</td>
+                            <td>업무 서비스</td>
+                            <td>점검 중</td>
+                            <td>점검 완료</td>
+                            <td>완료시간</td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+<!-- Optional JavaScript -->
+{% block script %}
+    <script>
+        function resetbtn() {
+            $.ajax({
+                type: 'GET',
+                url: 'bsratereset',
+                data: {},
+                success: function (re) {
+                    window.location.reload();
+                }
+            })
+        }
+    </script>
+    <script src="{{ url_for('static',filename='assets/libs/js/bsall.js') }}"></script>
+{% endblock script %}

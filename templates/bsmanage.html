@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">{{ title }}</h5>
+                <a href="#" onclick="bseditevent();"><i id="plusminus2" class="fas fa-plus" style="float: right">업무
+                    서비스
+                    편집</i></a>
+                <a href="#" onclick="bdeditevent();"><i id="plusminus1" class="fas fa-plus" style="float: right">업무
+                    구분
+                    편집</i></a>
+                <div id="bdedit" style="display: None">
+                    <form action="/bdedit" method="POST">
+                        <table class="table table-striped table-bordered" style="width:100%">
+                            <tr>
+                                <th>업무구분</th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select class="form-control" id="bd-select1" onchange="bdadd()">
+                                        <option selected disabled>업무명을 선택하세요</option>
+                                        {% for i in data %}
+                                            <option>{{ i.BD }}</option>
+                                        {% endfor %}
+                                        <option>추가</option>
+                                    </select>
+                                    <input type="hidden" class="form-control" name="org_bdname">
+                                    <input type="text" class="form-control" style="display: None;"
+                                           name="bdname">
+                                </td>
+                                <td>
+                                    <input type="button" class="btn btn-space btn-primary" value="edit"
+                                           id="editbtn1"
+                                           onclick="bdeditbtn()">
+                                    <input type="submit" class="btn btn-space btn-brand" value="edit" id="editbtn11"
+                                           style="display: none">
+                                    <input type="submit" class="btn btn-space btn-info" value="add" id="addbtn1"
+                                           style="display: none">
+                                    <input type="button" id="delbtn1" class="btn btn-space btn-secondary"
+                                           value="delete"
+                                           onclick="bddelete()">
+                                    <input type="button" id="cancelbtn1" class="btn btn-space btn-light"
+                                           value="cancle"
+                                           style="display: none" onclick="canclebtn()">
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+                <div id="bsedit" style="display: None">
+                    <form action="/bsadd" method="POST">
+                        <table class="table table-striped table-bordered" style="width:100%">
+                            <tr>
+                                <th>업무구분</th>
+                                <th>업무 서비스</th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input class="form-control" name=org_bdname2 type="text"
+                                           style="display: none;" readonly>
+                                    <select class="form-control" id="bd-select2" onchange="bdselected()">
+                                        <option value="" selected disabled>업무명을 선택하세요</option>
+                                        {% for i in data %}
+                                            <option>{{ i.BD }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="hidden" class="form-control" name="org_bsname">
+                                    <select class="form-control" id="bs-select1" onchange="bsadd()">
+                                    </select>
+                                    <input type="text" class="form-control" style="display: none"
+                                           name="bsname">
+                                </td>
+                                <td>
+                                    <input type="submit" class="btn btn-space btn-info" value="add" id="addbtn2"
+                                           style="display: none">
+                                    <input type="button" class="btn btn-space btn-primary" value="edit"
+                                           id="editbtn2"
+                                           onclick="bseditbtn()">
+                                    <input type="submit" class="btn btn-space btn-brand" value="edit" id="editbtn22"
+                                           style="display: none">
+                                    <input type="button" id="delbtn2" class="btn btn-space btn-secondary"
+                                           value="delete"
+                                           onclick="bsdelete()">
+                                    <input type="button" id="cancelbtn2" class="btn btn-space btn-light"
+                                           value="cancle"
+                                           style="display: none" onclick="canclebtn2()">
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" style="width:100%">
+                        <thead>
+                        <tr>
+                            <th>업무구분</th>
+                            <th>업무 서비스</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for i in data %}
+                            <tr>
+                                {% if i.BS|length == 0 %}
+                                    <td>{{ i.BD }}</td>
+                                    <td></td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td rowspan="{{ i.BS|length }}">{{ i.BD }}</td>
+                                        {% for x in i.BS %}
+                                            <td>{{ x.BSname }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                {% endif %}
+                        {% endfor %}
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <td>업무구분</td>
+                            <td>업무 서비스</td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+<!-- ============================================================== -->
+<!-- end data table multiselects  -->
+<!-- ============================================================== -->
+
+<!-- Optional JavaScript -->
+{% block script %}
+    <script src="{{ url_for('static',filename='assets/libs/js/bsall.js') }}"></script>
+{% endblock script %}
+</body>
+
+</html>

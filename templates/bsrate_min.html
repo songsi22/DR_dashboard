@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">{{ title }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" style="width:100%">
+                        <thead>
+                        <tr>
+                            <th>업무구분</th>
+                            <th>업무 서비스</th>
+                            <th>점검 완료</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for i in data %}
+                            <tr>
+                                {% if i.BS|length == 0 %}
+                                    <td>{{ i.BD }}</td>
+                                    <td></td>
+                                    <td></td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td rowspan="{{ i.BS|length }}">{{ i.BD }}</td>
+                                        {% for x in i.BS %}
+                                            <td>{{ x.BSname }}</td>
+                                            <td>
+                                                {% if x.BSdone == 1 %}
+                                                    <div class="input-group">
+                                                        <div class="input-group-append">
+                                                            <input type="button" name="{{ x.BSname }}"
+                                                                   class="btn bg-success text-white"
+                                                                   disabled value="점검 완료"/>
+                                                        </div>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="input-group">
+                                                        <div class="input-group-append">
+                                                            <input type="button" name="{{ x.BSname }}"
+                                                                   class="btn bg-danger text-white"
+                                                                   value="점검 중"/>
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                            </tr>
+                                        {% endfor %}
+                                {% endif %}
+                        {% endfor %}
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <td>업무구분</td>
+                            <td>업무 서비스</td>
+                            <td>점검 완료</td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+<!-- Optional JavaScript -->
+{% block script %}
+    <script src="{{ url_for('static',filename='assets/libs/js/bsall.js') }}"></script>
+{% endblock script %}

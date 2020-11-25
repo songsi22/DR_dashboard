@@ -1,0 +1,596 @@
+{% extends 'base.html' %}
+{% block style %}
+    <link rel="stylesheet" type="text/css"
+          href="{{ url_for('static',filename='assets/libs/css/jquery.datetimepicker.css') }}">
+{% endblock style %}
+{% block content %}
+    <div class="container-fluid dashboard-content">
+        <div class="col-lg-8 alertdiv">
+        </div>
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title border-bottom pb-2">재해복구 모의훈련 상황실 번호</h3>
+                    <p class="card-text">내선번호 #4821</p>
+                    <p class="card-text">일반번호 02-6040-4821</p>
+                    <p class="card-text">재해복구 모의훈련 진행관련 문의사항은 상기 번호로 연락 바랍니다.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+            <div class="input-group">
+                <div class="input-group-append">
+                    {% if drstime1|length != 0 %}
+                        <div class="input-group-prepend"><span class="input-group-text">선언 시간</span></div>
+                        <input type="text" class="form-control" id="datepick"
+                               placeholder="시간 선택" disabled value="{{ drstime1 }}">
+                    {% else %}
+                        <input type="text" class="form-control" id="datepick"
+                               placeholder="시간 선택">
+                    {% endif %}
+                </div>
+            </div>
+            {% if user['id'] == 'bcrs' %}
+                <button type="button" class="btn btn-outline-success" id="timesave">저장
+                </button>
+                <button type="button" class="btn btn-outline-danger" id="timereset"
+                        onclick="TimeReset()">초기화
+                </button>
+            {% endif %}
+            {% if user['id'] == 'bcrs' %}
+                <button type="button" class="btn btn-outline-dark" id="timereset"
+                        onclick="sysTimesave()">시스템 복구 시작
+                </button>
+                <button type="button" class="btn btn-outline-dark" id="timereset"
+                        onclick="drillfinish()">재해복구 종료
+                </button>
+            {% endif %}
+        </div>
+        <div class="col-xl col-lg-12 col-md-12 col-sm-12 col-12 mb-3">
+            <div class="section-block">
+                <h5 class="section-title">개요</h5>
+            </div>
+            <div class="pills-regular">
+                <ul class="nav nav-pills mb-1" id="pills-tab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#timeline" role="tab"
+                           aria-controls="timeline" aria-selected="true">타임라인</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="pills-home-tab" data-toggle="pill" href="#scenario" role="tab"
+                           aria-controls="home" aria-selected="false">시나리오</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#purpose" role="tab"
+                           aria-controls="profile" aria-selected="false">목적</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#rto" role="tab"
+                           aria-controls="contact" aria-selected="false">RTO</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#rpo" role="tab"
+                           aria-controls="contact" aria-selected="false">RPO</a>
+                    </li>
+                    {#<li class="nav-item">
+                        <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#chart" role="tab"
+                           aria-controls="contact" aria-selected="false">진행 차트</a>
+                    </li>#}
+                </ul>
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="timeline" role="tabpanel"
+                         aria-labelledby="pills-timeline-tab">
+                        <div class="bs-example table-responsive">
+                            <table class="table table-bordered dashtable"
+                                   style="text-align:center; vertical-align:middle; font-size:12px;">
+                                <thead>
+                                <tr>
+                                    <th style="text-align:center; vertical-align:middle;">#</th>
+                                    <th style="text-align:center; vertical-align:middle;">단계</th>
+                                    <th style="text-align:center; vertical-align:middle;">시작시간</th>
+                                    <th style="text-align:center; vertical-align:middle;">종료시간</th>
+                                    <th style="text-align:center; vertical-align:middle;">수행팀</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% set c=0 %}
+                                {% for i in alldata %}
+                                    <tr>
+                                        <td>{{ loop.index }}</td>
+                                        <td>{{ i.step }}</td>
+                                        <td>{{ i.Stime.split(' ')[1] }}</td>
+                                        <td>{{ i.Qtime.split(' ')[1] }}</td>
+                                        <td>{{ i.team }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="scenario" role="tabpanel"
+                         aria-labelledby="pills-home-tab">
+                        {% if drstime1|length != 0 %}
+                            <p>{{ drstime1.split(' ')[0].split('/')[0] }}년 {{ drstime1.split(' ')[0].split('/')[1] }}월 {{ drstime1.split(' ')[0].split('/')[2] }}일 {{ drstime1.split(' ')[1] }}에
+                                발생한 인천 경제자유구역 ㅁㅁㅁ 지하
+                                화재로 인한 {{ drstime1.split(' ')[1] }} 부로 ㅁㅁㅁ 주센터의 재해를 선포합니다.
+                                <br>재해복구시스템의 복구완료 공고 이후는 죽전 재해복구센터의 재해복구시스템을 이용하여 서비스를 재개합니다.
+                                <br>본 개시 선언은 가상의 재해 상황을 가정하여 선언되며, 업무시스템에 대한 재해복구 모의훈련을 통하여 업무연속성 및 더욱 안정적인 전산서비스를 제공하고자
+                                {{ drstime1.split(' ')[1] }} ~
+                                {% if drstime1.split(' ')[1].split(':')[0]|int + 12 < 24 %}
+                                    {{ drstime1.split(' ')[1].split(':')[0]|int + 12 }}:
+                                {% else %}
+                                    명일 {{ drstime1.split(' ')[1].split(':')[0]|int - 12 }}:
+                                {% endif %}{{ drstime1.split(' ')[1].split(':')[1] }}
+                                까지
+                                재해복구 모의훈련을 실시합니다.
+                                <br>테스트 단말을 동원한 재해복구 모의훈련이므로 ㅁㅁㅁ 주센터의 업무에는 전혀 지장이 없습니다.</p>
+                        {% else %}
+                            <p>년 월 일 에
+                                발생한 인천 경제자유구역 ㅁㅁㅁ 지하
+                                화재로 인한 부로 ㅁㅁㅁ 주센터의 재해를 선포합니다.
+                                <br>재해복구시스템의 복구완료 공고 이후는 죽전 재해복구센터의 재해복구시스템을 이용하여 서비스를 재개합니다.
+                                <br>본 개시 선언은 가상의 재해 상황을 가정하여 선언되며, 업무시스템에 대한 재해복구 모의훈련을 통하여 업무연속성 및 더욱 안정적인 전산서비스를 제공하고자
+                                ~
+                                까지
+                                재해복구 모의훈련을 실시합니다.
+                                <br>테스트 단말을 동원한 재해복구 모의훈련이므로 ㅁㅁㅁ 주센터의 업무에는 전혀 지장이 없습니다.</p>
+                        {% endif %}
+                    </div>
+                    <div class="tab-pane fade" id="purpose" role="tabpanel" aria-labelledby="pills-profile-tab">
+                        <ul>
+                            <li> RTO 1그룹에 대한 복구목표시간 이내 복구성공</li>
+                            <li> 재해복구 체계에 대한 실지상의 가동 및 검증</li>
+                            <li> 업무검증위한 현업 참여</li>
+                            <li> BR 업무검증 테스트</li>
+                        </ul>
+                    </div>
+                    <div class="tab-pane fade" id="rto" role="tabpanel" aria-labelledby="pills-contact-tab">
+                        <p> * RTO(복구목표시간)이란, 재해시 업무연속성의 유지를 위해 복구되어야 하는 비즈니스 프로세스가 복구되는데 걸리는 시간 및 서비스 레벨을 말한다.<br>
+                            *The recovery time objective (RTO) is the duration of time and a service level within which
+                            a
+                            business process must be restored after a disaster (or disruption) in order to avoid
+                            unacceptable consequences associated with a break in business continuity.</p>
+                    </div>
+                    <div class="tab-pane fade" id="rpo" role="tabpanel" aria-labelledby="pills-contact-tab">
+                        <p> * RPO(복구목표시점)이란, 재해시 비상상황 발생으로 인해 IT 시스템이 중단되었을 때 복구되는 데이터의 시점을 말한다.<br>
+                            * A recovery point objective (RPO), is defined by business continuity planning. It is the
+                            maximum tolerable period in which data might be lost from an IT service due to a major
+                            incident.
+                        </p>
+                    </div>
+                    {#<div class="tab-pane fade" id="chart" role="tabpanel" aria-labelledby="pills-contact-tab">
+                        #}{#                        <iframe src="{{ url_for('chart') }}" width="100%" height="900px" frameborder="0" scrolling="auto"></iframe>#}{#
+                        <iframe src="{{ url_for('chart') }}"
+                                style="display:block; width:100%; height: 100vh;" marginheight="0" marginwidth="0"></iframe>
+                    </div>#}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-inline-block">
+                            <h5 class="text-muted">서버 기동 완료</h5>
+                            <h2 class="mb-0"> {{ svr_started|length }} / {{ svr_total|length }}</h2>
+                        </div>
+                        <div class="float-right icon-circle-medium  icon-box-lg  bg-brand-light mt-1">
+                            <i class="fa fa-check fa-fw fa-sm text-brand"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-inline-block">
+                            <h5 class="text-muted">업무 미점검</h5>
+                            <h2 class="mb-0"><span style="color: #a40000">{{ bs_uncheck_num }}</span> / {{ total_num }}
+                            </h2>
+                        </div>
+                        <div class="float-right icon-circle-medium  icon-box-lg  bg-secondary-light mt-1">
+                            <i class="fa fa-ban fa-fw fa-sm text-secondary"></i>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex text-muted">
+                        {% for i in dash_uncheck %}
+                            {{ i.children.name }},<br/>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-inline-block">
+                            <h5 class="text-muted">업무 점검 중</h5>
+                            <h2 class="mb-0"> {{ bs_checking_num }} / {{ total_num }}</h2>
+                        </div>
+                        <div class="float-right icon-circle-medium  icon-box-lg  bg-info-light mt-1">
+                            <i class="fa fa-spinner fa-fw fa-sm text-info"></i>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex text-muted">
+                        {% for i in dash_checking %}
+                            {{ i.children.name }},<br/>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-inline-block">
+                            <h5 class="text-muted">업무 점검 완료</h5>
+                            <h2 class="mb-0"> {{ bs_checked_num }} / {{ total_num }}</h2>
+                        </div>
+                        <div class="float-right icon-circle-medium  icon-box-lg  bg-success-light mt-1">
+                            <i class="fa fa-check-circle fa-fw fa-sm text-success"></i>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex text-muted">
+                        {% for i in dash_checked %}
+                            {{ i.children.name }},<br/>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="card  card-center">
+                    <h3 class="card-header text-primary">현재 시간</h3>
+                    <div class="card-body">
+                        <digiclock></digiclock>
+                    </div>
+                </div>
+                <div class="card  card-center">
+                    <h3 class="card-header text-primary">RTO 시간</h3>
+                    <div class="card-body">
+                        <h2 id="rtoh2"></h2>
+                    </div>
+                </div>
+            </div>
+            {#<div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="card  card-center">
+                    <h3 class="card-header text-primary">서버 기동률</h3>
+                    <div class="card-body">
+                        <div id="container">
+                            #}{#                            <span class="percent" id="svr_per"></span>#}{#
+                        </div>
+                    </div>
+                </div>
+            </div>#}
+            <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="card card-center">
+                    <h3 class="card-header text-primary">서비스 기동 완료율</h3>
+                    <div class="card-body">
+                        <div class="chart chart2" data-percent="0">
+                            <span class="percent" id="servi_per"></span>
+                        </div>
+                    </div>
+                    <span>자세히 보기는 차트 클릭</span>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block script %}
+    <script src="{{ url_for('static',filename='assets/libs/js/localclock.js') }}"></script>
+    <script src="{{ url_for('static',filename='assets/libs/js/countdown.js') }}"></script>
+    <script src="{{ url_for('static',filename='assets/vendor/jquery/jquery-3.3.1.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='assets/libs/js/jquery.datetimepicker.js') }}"></script>
+    <script src="{{ url_for('static',filename='assets/vendor/easy-pie-chart/js/easypiechart.js') }}"></script>
+    <script src="{{ url_for('static',filename='assets/vendor/easy-pie-chart/js/jquery.easypiechart.js') }}"></script>
+    <script>
+        {% if user['id'] == 'bcrs' %}
+            $('.chart1').click(function () {
+                location.href = 'hostrate';
+            });
+            $('.chart2').click(function () {
+                location.href = 'bsrate';
+            });
+        {% endif %}
+        if ($('#datepick').val() != '' && $('#datepick').length != 0) {
+            let date = $('#datepick').val().split(' ');
+            let time1 = date[1].split(':')[0];
+            let time2 = date[1].split(':')[1];
+            if (Number(time1) < 12) {
+                time1 = Number(time1) + 12
+                time = time1 + ':' + time2
+                countDownTimer('rtoh2', date[0] + ' ' + time);
+            } else {
+                year = date[0].split('/')[0]
+                month = date[0].split('/')[1]
+                day = Number(date[0].split('/')[2]) + 1
+                date = year + '/' + month + '/' + day
+                time1 = Number(time1) - 12
+                time = time1 + ':' + time2
+                countDownTimer('rtoh2', date + ' ' + time);
+            }
+        } else {
+            $('#rtoh2').text("훈련 시작 없음");
+        }
+
+        $('#datepick').datetimepicker({
+            datepicker: false,
+            step: 5
+        });
+
+        $(function () {
+            $('.chart').easyPieChart({
+                easing: 'easeOutElastic',
+                delay: 3000,
+                barColor: '#69c',
+                trackColor: '#ace',
+                scaleColor: false,
+                lineWidth: 20,
+                trackWidth: 16,
+                lineCap: 'butt',
+                size: 200,
+                onStep: function (from, to, percent) {
+                    $(this.el).find('.percent').text(Math.round(percent));
+                }
+            });
+        });
+
+        $(document).ready(function () {
+            bsrate();
+        })
+
+        function svrrate() {
+            $.ajax({
+                type: 'GET',
+                url: 'dashsvrrate',
+                data: {},
+                success: function (re) {
+                    total = re.length;
+                    count = 0;
+                    for (let i = 0; i < total; i++) {
+                        if (re[i]['started'] == 1) {
+                            count += 1;
+                        }
+                    }
+                    rate = (parseInt((count * 100) / total));
+                    $('.chart1').data('easyPieChart').update(rate);
+                }
+            })
+
+            setInterval(function () {
+                $.ajax({
+                    type: 'GET',
+                    url: 'dashsvrrate',
+                    data: {},
+                    success: function (re) {
+                        total = re.length;
+                        count = 0;
+                        for (let i = 0; i < total; i++) {
+                            if (re[i]['started'] == 1) {
+                                count += 1;
+                            }
+                        }
+                        rate = (parseInt((count * 100) / total));
+                        $('.chart1').data('easyPieChart').update(rate);
+                    }
+                })
+            }, 5000);
+        }
+
+        function bsrate() {
+
+            $.ajax({
+                type: 'GET',
+                url: 'dashbsrate',
+                data: {},
+                success: function (re) {
+                    total = re.length;
+                    count = 0;
+                    for (let i = 0; i < total; i++) {
+                        if (re[i]['BSdone'] == 1) {
+                            count += 1;
+                        }
+                    }
+                    rate = (parseInt((count * 100) / total));
+                    $('.chart2').data('easyPieChart').update(rate);
+                }
+            })
+
+            const getCookieValue = (key) => {
+                let cookieKey = key + "=";
+                let result = "";
+                const cookieArr = document.cookie.split(";");
+
+                for (let i = 0; i < cookieArr.length; i++) {
+                    if (cookieArr[i][0] === " ") {
+                        cookieArr[i] = cookieArr[i].substring(1);
+                    }
+
+                    if (cookieArr[i].indexOf(cookieKey) === 0) {
+                        result = cookieArr[i].slice(cookieKey.length, cookieArr[i].length);
+                        return result;
+                    }
+                }
+                return result;
+            }
+            setInterval(function () {
+                $.ajax({
+                    type: 'GET',
+                    url: 'dashbsrate',
+                    data: {},
+                    success: function (re) {
+                        total = re.length;
+                        count = 0;
+                        for (let i = 0; i < total; i++) {
+                            if (re[i]['BSdone'] == 1) {
+                                count += 1;
+                            }
+                        }
+                        rate = (parseInt((count * 100) / total));
+                        $('.chart2').data('easyPieChart').update(rate);
+                    }
+                })
+                let svr_per = $('#svr_per').text();
+                let servi_per = $('#servi_per').text();
+                if (svr_per == 100 && getCookieValue('reload') == 0) {
+                    document.cookie = 'reload=1'
+                    location.reload()
+                } else if (servi_per == 100 && getCookieValue('reload') == 1) {
+                    document.cookie = 'reload=2'
+                    location.reload()
+                }
+            }, 5000);
+        }
+
+        function TimeSave() {
+            if (!$('#datepick').val() == '')
+                $('#datepick').attr("disabled", true);
+            let time = $('#datepick').val();
+            let f = document.createElement("form");
+            f.setAttribute("method", "post");
+            f.setAttribute("action", "timesave");
+            document.body.appendChild(f);
+            let i = document.createElement("input");
+            i.setAttribute("type", "hidden");
+            i.setAttribute("name", "time");
+            i.setAttribute("value", time);
+            f.appendChild(i);
+            f.submit();
+        }
+
+        function TimeReset() {
+            let confirm = prompt('재설정이란 \n' +
+                '서버 기동 / 서비스 기동을 모두 초기화 하고 \n' +
+                '타임라인을 모두 초기화 합니다.\n' +
+                '그래도 하시겠습니까?' +
+                'yes | no')
+            if (confirm == 'yes') {
+                document.cookie = 'reload=0';
+                $('#datepick').attr("disabled", false);
+                let time = $('#datepick').val();
+                $('#datepick').val('');
+                let f = document.createElement("form");
+                f.setAttribute("method", "post");
+                f.setAttribute("action", "timereset");
+                document.body.appendChild(f);
+                let i = document.createElement("input");
+                i.setAttribute("type", "hidden");
+                i.setAttribute("name", "time");
+                i.setAttribute("value", time);
+                f.appendChild(i);
+                f.submit();
+            } else
+                pass;
+        }
+
+        function sysTimesave() {
+            let today = new Date();
+            let year = today.getFullYear();
+            let month = today.getMonth();
+            let date = today.getDate();
+            let hour = today.getHours();
+            let min = (today.getMinutes() < 10 ? '0' : '') + today.getMinutes();
+            let time = year + '/' + month + '/' + date + ' ' + hour + ':' + min
+            let f = document.createElement("form");
+            f.setAttribute("method", "post");
+            f.setAttribute("action", "systimesave");
+            document.body.appendChild(f);
+            let i = document.createElement("input");
+            i.setAttribute("type", "hidden");
+            i.setAttribute("name", "time");
+            i.setAttribute("value", time);
+            f.appendChild(i);
+            f.submit();
+        }
+
+        function drillfinish() {
+            let today = new Date();
+            let year = today.getFullYear();
+            let month = today.getMonth();
+            let date = today.getDate();
+            let hour = today.getHours();
+            let min = (today.getMinutes() < 10 ? '0' : '') + today.getMinutes();
+            let time = year + '/' + month + '/' + date + ' ' + hour + ':' + min
+            let f = document.createElement("form");
+            f.setAttribute("method", "post");
+            f.setAttribute("action", "drillfinish");
+            document.body.appendChild(f);
+            let i = document.createElement("input");
+            i.setAttribute("type", "hidden");
+            i.setAttribute("name", "time");
+            i.setAttribute("value", time);
+            f.appendChild(i);
+            f.submit();
+        }
+
+        $('.chart2').click(function () {
+            $(location).attr('href', 'bsrate_chart');
+        })
+        {% if user['id'] == 'bcrs' %}
+            $('.chart1').click(function () {
+                $(location).attr('href', 'hostrate');
+            })
+        {% endif %}
+    </script>
+    <script>
+        dranon = $('#timeline > div > table > tbody > tr:nth-child(1) > td:nth-child(3)').text();
+        sysre = $('#timeline > div > table > tbody > tr:nth-child(2) > td:nth-child(3)').text();
+        bscheck = $('#timeline > div > table > tbody > tr:nth-child(3) > td:nth-child(3)').text();
+        bsdone = $('#timeline > div > table > tbody > tr:nth-child(4) > td:nth-child(3)').text();
+        drdone = $('#timeline > div > table > tbody > tr:nth-child(4) > td:nth-child(4)').text();
+        if (dranon == "") {
+            pass;
+        } else if (dranon != "" && sysre == "") {
+            $('.alertdiv').html('<div class="alert alert-dismissable alert-danger">\n' +
+                '                    <button type="button" class="close" data-dismiss="alert">&times;</button>\n' +
+                '                    <h4>재해 선언</h4>\n' +
+                '                    <p>\n' +
+                '                        {{ drstime1 }}\n' +
+                '                    </p>\n' +
+                '                    <p> 재해가 선언되었습니다. 모든 직원들은 비상연락망을 통해 연락 및 재해복구에 힘써주시기 바랍니다.</p>\n' +
+                '                </div>')
+        } else if (sysre != "" && bscheck == "") {
+            $('.alertdiv').empty();
+            $('.alertdiv').html('<div class="alert alert-dismissable alert-info"> \n' +
+                '<button type="button" class="close" data-dismiss="alert">&times;</button>\n' +
+                '<h4>시스템 기동</h4>\n' +
+                '<p>\n' +
+                '{{ drstime2 }}            \n' +
+                '</p>\n' +
+                '<p><strong>시스템복구팀</strong>은 재해복구 시스템을 이용하여 서버를 기동하시기 바랍니다.</p>\n' +
+                '</div>')
+        } else if (bscheck != "" && bsdone == "") {
+            $('.alertdiv').empty();
+            $('.alertdiv').html('<div class="alert alert-dismissable alert-info">  \n' +
+                '\t\t\t\t<button type="button" class="close" data-dismiss="alert">&times;</button>\n' +
+                '\t\t\t\t<h4>업무 점검</h4>\n' +
+                '\t\t\t\t<p>\n' +
+                '\t\t\t\t\t{{ drstime3 }}\n' +
+                '\t\t\t\t</p>\n' +
+                '\t\t\t\t<p><strong>업무점검팀</strong>은 재해복구 시스템을 이용하여 업무점검을 수행하시기 바랍니다.</p>\n' +
+                '\t\t\t</div>')
+        } else if (bsdone != "" && drdone == "") {
+            $('.alertdiv').empty();
+            $('.alertdiv').html('<div class="alert alert-dismissable alert-success">\n' +
+                '\t\t\t\t<button type="button" class="close" data-dismiss="alert">&times;</button>\n' +
+                '\t\t\t\t<h4>재해복구 완료</h4>\n' +
+                '\t\t\t\t<p>\n' +
+                '\t\t\t\t\t{{ drstime4 }}\n' +
+                '\t\t\t\t</p>\n' +
+                '\t\t\t\t<p><strong>복구가 완료되어 업무 재개가 가능합니다.</strong></p>\n' +
+                '\t\t\t</div>')
+        } else if (drdone != "") {
+            $('.alertdiv').empty();
+            $('.alertdiv').html('<div class="alert alert-dismissable alert-success">\n' +
+                '\t\t\t\t<button type="button" class="close" data-dismiss="alert">&times;</button>\n' +
+                '\t\t\t\t<h4>재해상황 종료</h4>\n' +
+                '\t\t\t\t<p>\n' +
+                '\t\t\t\t\t{{ drfinish }}\n' +
+                '\t\t\t\t</p>\n' +
+                '\t\t\t\t<p><strong>복구가 완료되어 재해상황이 종료되었습니다.</strong></p>\n' +
+                '\t\t\t</div>')
+        }
+
+
+    </script>
+{% endblock script %}

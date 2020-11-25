@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">{{ title }} </h5>
+                {% if user.id == 'bcrs' %}
+                    <a href="#" onclick="resetbtn();" style="float: right"><span
+                            style="color:red">기동 완료 Reset</span></a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered" style="width:100%">
+                        <thead>
+                        <tr>
+                            <th>hostname</th>
+                            <th>ip</th>
+                            <th>기동완료</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for i in data %}
+                            <tr>
+                                <td>{{ i.hostname }}</td>
+                                <td>{{ i.ip }}</td>
+                                <td>
+                                    {% if i.started == 1 %}
+                                        <div class="input-group mb-1 col-6">
+                                            <div class="input-group-append">
+                                                <button type="button" name="{{ i.hotsname }}"
+                                                        class="btn btn-success active"
+                                                        disabled>기동완료
+                                                </button>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div class="input-group mb-1 col-6">
+                                            <div class="input-group-append">
+                                                <button type="button" name="{{ i.hostname }}"
+                                                        class="btn btn-outline-danger svrstarting">기동 중
+                                                </button>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <td>hostname</td>
+                            <td>ip</td>
+                            <td>기동완료</td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+<!-- ============================================================== -->
+<!-- end data table multiselects  -->
+<!-- ============================================================== -->
+
+<!-- Optional JavaScript -->
+{% block script %}
+    <script>
+        $('.svrstarting').click(function () {
+            hostname = $(this).attr('name')
+            $.ajax({
+                type: 'POST',
+                url: 'svrstarted',
+                data: {hostname: hostname},
+                success: function (re) {
+                    window.location.reload();
+                }
+            })
+        })
+
+
+        function resetbtn() {
+            $.ajax({
+                type: 'GET',
+                url: 'hostratereset',
+                data: {},
+                success: function (re) {
+                    window.location.reload();
+                }
+            })
+        }
+    </script>
+
+{% endblock script %}
+</body>
+</html>

@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+{% block style %}
+    <link href="{{ url_for('static',filename='assets/vendor/bct-sunburst/css/anychart-ui.min.css') }}"
+          rel="stylesheet" type="text/css">
+    <style>html, body, .container {
+        width: auto;
+        height: 300px;
+        margin: 0;
+        padding: 0;
+    }</style>
+{% endblock %}
+{% block content %}
+    <div class="row ">
+        <div class="col-xl-3 col-lg-5 col-md-6 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-body chartrefresh2">
+                    <h5 class="text-muted">쇼핑몰</h5>
+                </div>
+                <div class="container" id="container1">
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-5 col-md-6 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-body cbody2">
+                    <h5 class="text-muted">POS</h5>
+                </div>
+                <div class="container" id="container2">
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-5 col-md-6 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="text-muted">PRM</h5>
+                </div>
+                <div class="container" id="container3">
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-5 col-md-6 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="text-muted">SCM</h5>
+                </div>
+                <div class="container" id="container4">
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-5 col-md-6 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="text-muted">FCM</h5>
+                </div>
+                <div class="container" id="container5">
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-5 col-md-6 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="text-muted">HRM</h5>
+                </div>
+                <div class="container" id="container6">
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-5 col-md-6 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-body ">
+                    <h5 class="text-muted">공통</h5>
+                </div>
+                <div class="container ttt" id="container7">
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-5 col-md-6 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="text-muted">기타</h5>
+                </div>
+                <div class="container" id="container8">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-12 col-lg-5 col-md-12 col-sm-12 col-12">
+        <div class="card">
+            <h5 class="card-header">진행</h5>
+            <div class="card-body ">
+                <table class="table table-bordered tablerefresh1">
+                    <thead>
+                    <tr>
+                        <th scope="col">구분</th>
+                        <th scope="col">전체</th>
+                        <th scope="col">업무 미점검</th>
+                        <th scope="col">업무 점검 중</th>
+                        <th scope="col">업무 점검 완료</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <th scope="row">쇼핑몰</th>
+                        <td>{{ OC_total }}</td>
+                        <td>{{ OC_uncheck_num }}</td>
+                        <td>{{ OC_checking_num }}</td>
+                        <td>{{ OC_checked_num }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">POS</th>
+                        <td>{{ pos_total }}</td>
+                        <td>{{ pos_uncheck_num }}</td>
+                        <td>{{ pos_checking_num }}</td>
+                        <td>{{ pos_checked_num }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">PRM NEXT</th>
+                        <td>{{ prm_total }}</td>
+                        <td>{{ prm_uncheck_num }}</td>
+                        <td>{{ prm_checking_num }}</td>
+                        <td>{{ prm_checked_num }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">SCM</th>
+                        <td>{{ scm_total }}</td>
+                        <td>{{ scm_uncheck_num }}</td>
+                        <td>{{ scm_checking_num }}</td>
+                        <td>{{ scm_checked_num }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">FCM</th>
+                        <td>{{ fcm_total }}</td>
+                        <td>{{ fcm_uncheck_num }}</td>
+                        <td>{{ fcm_checking_num }}</td>
+                        <td>{{ fcm_checked_num }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">HRM</th>
+                        <td>{{ hrm_total }}</td>
+                        <td>{{ hrm_uncheck_num }}</td>
+                        <td>{{ hrm_checking_num }}</td>
+                        <td>{{ hrm_checked_num }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">공통</th>
+                        <td>{{ common_total }}</td>
+                        <td>{{ common_uncheck_num }}</td>
+                        <td>{{ common_checking_num }}</td>
+                        <td>{{ common_checked_num }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">기타</th>
+                        <td>{{ etc_total }}</td>
+                        <td>{{ etc_uncheck_num }}</td>
+                        <td>{{ etc_checking_num }}</td>
+                        <td>{{ etc_checked_num }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+<!-- Optional JavaScript -->
+{% block script %}
+
+    <script src="{{ url_for('static',filename='assets/libs/js/bsall.js') }}"></script>
+    <script src="{{ url_for('static',filename='assets/vendor/bct-sunburst/js/html5shiv.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='assets/vendor/bct-sunburst/js/respond.min.js') }}"></script>
+
+    <script src="{{ url_for('static',filename='assets/vendor/bct-sunburst/js/anychart-base.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='assets/vendor/bct-sunburst/js/anychart-sunburst.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='assets/vendor/bct-sunburst/js/anychart-exports.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='assets/vendor/bct-sunburst/js/anychart-ui.min.js') }}"></script>
+    <script type="text/javascript">
+    getchart();
+    function getchart(){
+        $.ajax({
+                type: 'GET',
+                url: 'bsrate_chart',
+                data: {},
+                success: function (re) {
+                    var data1 = {{ OC|safe }};
+                    var data2 = {{ pos|safe }};
+                    var data3 = {{ prm|safe }};
+                    var data4 = {{ scm|safe }};
+                    var data5 = {{ fcm|safe }};
+                    var data6 = {{ hrm|safe }};
+                    var data7 = {{ common|safe }};
+                    var data8 = {{ etc|safe }};
+
+                    // create a chart and set the data
+                    var chart1 = anychart.sunburst(data1, "as-tree");
+                    var chart2 = anychart.sunburst(data2, "as-tree");
+                    var chart3 = anychart.sunburst(data3, "as-tree");
+                    var chart4 = anychart.sunburst(data4, "as-tree");
+                    var chart5 = anychart.sunburst(data5, "as-tree");
+                    var chart6 = anychart.sunburst(data6, "as-tree");
+                    var chart7 = anychart.sunburst(data7, "as-tree");
+                    var chart8 = anychart.sunburst(data8, "as-tree");
+                    chart1.fill(function () {
+                        return this.parent ?
+                            anychart.color.lighten(this.parentColor, 0.3) :
+                            this.mainColor;
+                    });
+                    chart2.fill(function () {
+                        return this.parent ?
+                            anychart.color.lighten(this.parentColor, 0.3) :
+                            this.mainColor;
+                    });
+                    chart3.fill(function () {
+                        return this.parent ?
+                            anychart.color.lighten(this.parentColor, 0.3) :
+                            this.mainColor;
+                    });
+                    chart4.fill(function () {
+                        return this.parent ?
+                            anychart.color.lighten(this.parentColor, 0.3) :
+                            this.mainColor;
+                    });
+                    chart5.fill(function () {
+                        return this.parent ?
+                            anychart.color.lighten(this.parentColor, 0.3) :
+                            this.mainColor;
+                    });
+                    chart6.fill(function () {
+                        return this.parent ?
+                            anychart.color.lighten(this.parentColor, 0.3) :
+                            this.mainColor;
+                    });
+                    chart7.fill(function () {
+                        return this.parent ?
+                            anychart.color.lighten(this.parentColor, 0.3) :
+                            this.mainColor;
+                    });
+                    chart8.fill(function () {
+                        return this.parent ?
+                            anychart.color.lighten(this.parentColor, 0.3) :
+                            this.mainColor;
+                    });
+
+                    // set the chart title
+
+                    // set the container id
+                    chart1.container("container1");
+                    chart2.container("container2");
+                    chart3.container("container3");
+                    chart4.container("container4");
+                    chart5.container("container5");
+                    chart6.container("container6");
+                    chart7.container("container7");
+                    chart8.container("container8");
+                    // initiate drawing the chart
+                    chart1.draw();
+                    chart2.draw();
+                    chart3.draw();
+                    chart4.draw();
+                    chart5.draw();
+                    chart6.draw();
+                    chart7.draw();
+                    chart8.draw();
+                }
+            })
+    }
+        setInterval(function () {
+            $('.container').empty();
+            getchart();
+        }, 5000);
+    </script>
+{% endblock script %}

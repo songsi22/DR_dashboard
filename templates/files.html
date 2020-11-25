@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if user['id'] == 'bcrs' %}
+
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <form action="/fileupload" method="POST" enctype="multipart/form-data">
+                <div class="custom-file mb-3">
+                    <input type="file" name="file[]" multiple="multiple">
+                    <input type="submit" class="btn btn-space btn-primary" value="upload">
+
+                    <a href="#" class="btn btn-space btn-secondary" data-toggle="modal" data-target="#deletemodal">
+                        delete all
+                    </a>
+                    <!-- Modal -->
+                    <div class="modal fade" id="deletemodal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">전체 삭제 경고</h5>
+                                </div>
+                                <div class="modal-body">
+                                    <p>모든 파일이 삭제 됩니다.</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="/filedelete" class="btn btn-primary">confirm</a>
+                                    <a href="#" class="btn btn-secondary" data-dismiss="modal">cancle</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    {% endif %}
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">{{ title }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered" style="width:100%">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>filename</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if data %}
+                        {% for i in data %}
+                            <tr>
+                                <th>{{ loop.index }}</th>
+                                <th><a href="/download/{{ i }}">{{ i }}</a></th>
+                            </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                        <td colspan="2">
+                            <span style="display: inline-block; width: 95%;text-align: center">no files</span>
+                        </td>
+                        </tr>
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
